@@ -1,7 +1,8 @@
 {
   "name": "translate-description",
   "displayName": "拡張機能説明翻訳",
-  "description": "拡張機能の説明を日本語に翻訳する",
+  "description": "VSCode拡張機能の説明文やREADMEを日本語へ自動翻訳し、分かりやすく表示するツールです。GeminiのAPIを利用し、高品質な日本語訳を提供します。",
+  "icon": "images/icon.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.104.0"
@@ -9,7 +10,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
