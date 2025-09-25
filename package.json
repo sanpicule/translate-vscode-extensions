@@ -1,0 +1,57 @@
+{
+  "name": "translate-description",
+  "displayName": "拡張機能説明翻訳",
+  "description": "拡張機能の説明を日本語に翻訳する",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "translate-description.translateDescription",
+        "title": "拡張機能の説明を翻訳"
+      }
+    ],
+    "configuration": {
+      "title": "拡張機能説明翻訳",
+      "properties": {
+        "translateDescription.geminiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "高品質翻訳のためのGemini API Key（オプション）",
+          "markdownDescription": "Google AI StudioでGemini API Keyを取得して設定してください。設定しない場合はGoogle Translateが使用されます。\n\n[Gemini API Keyを取得](https://makersuite.google.com/app/apikey)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/node-fetch": "^2.6.13",
+    "@types/vscode": "^1.104.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "google-translate-api-x": "^10.7.1"
+  }
+}
