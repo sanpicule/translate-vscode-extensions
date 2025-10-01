@@ -50,7 +50,7 @@ async function translateWithGemini(text: string, apiKey: string): Promise<string
     }
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
         const prompt = `以下のMarkdownテキストを、自然で高品質な日本語に翻訳してください。
 ただし、コードブロック（\`\`\`）やインラインコード（\`）の中身、URL、ファイルパス、HTMLタグは絶対に翻訳・変更しないでください。
@@ -82,7 +82,7 @@ async function translateExtensionDescription(text: string): Promise<string> {
         if (geminiApiKey && geminiApiKey.trim() !== '') {
             const simplePrompt = `Translate the following English text into natural-sounding Japanese:\n\n${text}`;
             const genAI = new GoogleGenerativeAI(geminiApiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
             const result = await model.generateContent(simplePrompt);
             return (await result.response).text().trim();
         } else {
@@ -110,11 +110,8 @@ async function translateMarkdownText(markdownText: string): Promise<string> {
         }
     } catch (error) {
         console.error('マークダウン翻訳エラー:', error);
-        if (error instanceof Error && (error.message.includes('Gemini') || (error as any).type === 'gemini-error')) {
-            console.log('Gemini failed, falling back to Google Translate placeholder method.');
-            return await translateMarkdownWithPlaceholders(markdownText);
-        }
-        return markdownText;
+        // Geminiが失敗した場合は常にGoogle Translate方式へフォールバック
+        return await translateMarkdownWithPlaceholders(markdownText);
     }
 }
 
