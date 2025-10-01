@@ -1,71 +1,61 @@
-# translate-description README
+<div align="center">
 
-This is the README for your extension "translate-description". After writing up a brief description, we recommend including the following sections.
+# translate-vscode-extensions
 
-## Features
+VS Code拡張機能の説明文やREADMEを日本語へ自動翻訳し、見やすくプレビュー表示する拡張機能。
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+</div>
 
-For example if there is an image subfolder under your extension project workspace:
+## 概要 (What)
 
-\!\[feature X\]\(images/feature-x.png\)
+英語で書かれた拡張機能の説明やREADMEの内容を、日本語にワンクリックで翻訳し、原文と並べて確認できます。コードブロックやリンクなどの構造は崩さず、安全にプレビュー表示します。
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## 主な機能 (Features)
 
-## Requirements
+- 拡張機能の説明文と README.md を日本語に自動翻訳
+- コードブロック/インラインコード/リンク/画像/HTML を保持した構造的な翻訳
+- Webview 上で「原文」「翻訳」をタブ切替表示、拡張機能アイコン・バージョン表示に対応
+- 外部リンクやローカルファイルリンクのクリックに対応（安全にオープン）
+- Gemini 1.5 Flash による高品質翻訳（API Key 設定時）、未設定時は Google Translate を自動使用
+- ファイルは変更せず、翻訳結果はプレビュー表示のみ
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## 使い方 (Usage)
 
-## Extension Settings
+1. コマンドパレットを開く（macOS: Cmd+Shift+P / Windows/Linux: Ctrl+Shift+P）
+2. 「拡張機能の説明を翻訳」を実行
+3. 翻訳したい拡張機能を選択
+4. Webview に原文/翻訳タブが表示されます
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## 設定 (Configuration)
 
-For example:
+- 設定キー: `translateDescription.geminiApiKey`（任意）
+  - 設定しない場合は Google Translate を使用します
+  - 設定方法（例: settings.json）
 
-This extension contributes the following settings:
+```json
+{
+  "translateDescription.geminiApiKey": "YOUR_GEMINI_API_KEY"
+}
+```
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- 取得手順: Google AI Studio で Gemini API Key を取得してください。
+  - https://makersuite.google.com/app/apikey
 
-## Known Issues
+## 必要要件 (Requirements)
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Visual Studio Code 1.104.0 以上
+- インターネット接続（翻訳API利用のため）
 
-## Release Notes
+## スクリーンショット (Screenshots)
 
-Users appreciate release notes as you update your extension.
+![Webview](images/webview1.png)
 
-### 1.0.0
+![Webview](images/webview2.png)
 
-Initial release of ...
+![Webview](images/webview3.png)
 
-### 1.0.1
+![Webview](images/webview4.png)
 
-Fixed issue #.
+## 注意事項
 
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- 翻訳結果はプレビュー表示のみで、対象拡張機能やREADMEファイル自体は変更しません。

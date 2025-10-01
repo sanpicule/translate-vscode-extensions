@@ -1,44 +1,44 @@
-# Welcome to your VS Code Extension
+# VS Code 拡張機能へようこそ
 
-## What's in the folder
+## フォルダー構成
 
-* This folder contains all of the files necessary for your extension.
-* `package.json` - this is the manifest file in which you declare your extension and command.
-  * The sample plugin registers a command and defines its title and command name. With this information VS Code can show the command in the command palette. It doesn’t yet need to load the plugin.
-* `src/extension.ts` - this is the main file where you will provide the implementation of your command.
-  * The file exports one function, `activate`, which is called the very first time your extension is activated (in this case by executing the command). Inside the `activate` function we call `registerCommand`.
-  * We pass the function containing the implementation of the command as the second parameter to `registerCommand`.
+* このフォルダーには拡張機能に必要なファイル一式が含まれています。
+* `package.json` - 拡張機能やコマンドを宣言するマニフェストです。
+  * サンプル拡張はコマンドを登録し、そのタイトルとコマンド名を定義します。これにより VS Code はコマンドパレットにコマンドを表示できます。まだプラグイン本体を読み込む必要はありません。
+* `src/extension.ts` - コマンドの実装を記述するメインファイルです。
+  * このファイルは `activate` という関数をエクスポートします。この関数は拡張機能が初めてアクティブ化されるとき（ここではコマンド実行時）に呼び出されます。`activate` 内で `registerCommand` を呼び出します。
+  * コマンドの実装を含む関数を `registerCommand` の第2引数として渡します。
 
-## Get up and running straight away
+## すぐに実行して試す
 
-* Press `F5` to open a new window with your extension loaded.
-* Run your command from the command palette by pressing (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and typing `Hello World`.
-* Set breakpoints in your code inside `src/extension.ts` to debug your extension.
-* Find output from your extension in the debug console.
+* `F5` を押して、拡張機能を読み込んだ新しいウィンドウを開きます。
+* コマンドパレット（Windows/Linux: `Ctrl+Shift+P`, macOS: `Cmd+Shift+P`）で `Hello World` と入力してコマンドを実行します。
+* `src/extension.ts` 内のコードにブレークポイントを設定してデバッグします。
+* 拡張機能の出力はデバッグコンソールで確認できます。
 
-## Make changes
+## 変更を反映する
 
-* You can relaunch the extension from the debug toolbar after changing code in `src/extension.ts`.
-* You can also reload (`Ctrl+R` or `Cmd+R` on Mac) the VS Code window with your extension to load your changes.
+* `src/extension.ts` を変更したら、デバッグツールバーから拡張機能を再起動できます。
+* また、VS Code ウィンドウを再読み込み（Windows/Linux: `Ctrl+R`, macOS: `Cmd+R`）して変更を読み込むこともできます。
 
-## Explore the API
+## API を確認する
 
-* You can open the full set of our API when you open the file `node_modules/@types/vscode/index.d.ts`.
+* `node_modules/@types/vscode/index.d.ts` を開くと、API の全体像を参照できます。
 
-## Run tests
+## テストを実行する
 
-* Install the [Extension Test Runner](https://marketplace.visualstudio.com/items?itemName=ms-vscode.extension-test-runner)
-* Run the "watch" task via the **Tasks: Run Task** command. Make sure this is running, or tests might not be discovered.
-* Open the Testing view from the activity bar and click the Run Test" button, or use the hotkey `Ctrl/Cmd + ; A`
-* See the output of the test result in the Test Results view.
-* Make changes to `src/test/extension.test.ts` or create new test files inside the `test` folder.
-  * The provided test runner will only consider files matching the name pattern `**.test.ts`.
-  * You can create folders inside the `test` folder to structure your tests any way you want.
+* [Extension Test Runner](https://marketplace.visualstudio.com/items?itemName=ms-vscode.extension-test-runner) をインストールします。
+* **Tasks: Run Task** コマンドから "watch" タスクを実行します。これが動作していないとテストが検出されない場合があります。
+* アクティビティバーの Testing ビューを開き、"Run Test" ボタンをクリックするか、ショートカット `Ctrl/Cmd + ; A` を使用します。
+* テスト結果は Test Results ビューで確認できます。
+* `src/test/extension.test.ts` を変更するか、`test` フォルダー内に新しいテストファイルを作成します。
+  * 付属のテストランナーは `**.test.ts` に一致するファイルのみを対象にします。
+  * `test` フォルダー内に任意の構成でサブフォルダーを作成して構いません。
 
-## Go further
+## さらに進めるには
 
-* [Follow UX guidelines](https://code.visualstudio.com/api/ux-guidelines/overview) to create extensions that seamlessly integrate with VS Code's native interface and patterns.
-* Reduce the extension size and improve the startup time by [bundling your extension](https://code.visualstudio.com/api/working-with-extensions/bundling-extension).
-* [Publish your extension](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) on the VS Code extension marketplace.
-* Automate builds by setting up [Continuous Integration](https://code.visualstudio.com/api/working-with-extensions/continuous-integration).
-* Integrate to the [report issue](https://code.visualstudio.com/api/get-started/wrapping-up#issue-reporting) flow to get issue and feature requests reported by users.
+* VS Code のインターフェイス/パターンに自然に溶け込む拡張機能を作成するために、[UX ガイドライン](https://code.visualstudio.com/api/ux-guidelines/overview) に従ってください。
+* [拡張機能をバンドル](https://code.visualstudio.com/api/working-with-extensions/bundling-extension) してサイズを削減し、起動時間を改善します。
+* VS Code 拡張機能マーケットプレイスに[公開](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)します。
+* [CI（継続的インテグレーション）](https://code.visualstudio.com/api/working-with-extensions/continuous-integration) を設定してビルドを自動化します。
+* [Issue 報告フロー](https://code.visualstudio.com/api/get-started/wrapping-up#issue-reporting) を統合し、ユーザーからの不具合報告や機能要望を受け取れるようにします。
