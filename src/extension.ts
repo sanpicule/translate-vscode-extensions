@@ -11,9 +11,32 @@ async function translateWithGoogleTranslate(text: string): Promise<string> {
     if (!text || text.trim() === '') {
         return text;
     }
+
+    // 長文は分割して翻訳（Google Translateの制限回避）
+    const MAX_CHUNK = 3800; // 余裕を持って分割
+    const chunks: string[] = [];
+    if (text.length > MAX_CHUNK) {
+        let buf = '';
+        for (const line of text.split(/\r?\n/)) {
+            if ((buf + (buf ? '\n' : '') + line).length > MAX_CHUNK) {
+                if (buf) chunks.push(buf);
+                buf = line;
+            } else {
+                buf = buf ? `${buf}\n${line}` : line;
+            }
+        }
+        if (buf) chunks.push(buf);
+    } else {
+        chunks.push(text);
+    }
+
     try {
-        const result = await translate(text, { to: 'ja' });
-        return result.text;
+        const results: string[] = [];
+        for (const c of chunks) {
+            const r = await translate(c, { to: 'ja' });
+            results.push(r.text);
+        }
+        return results.join('\n');
     } catch (error) {
         console.error('Google Translate エラー:', error);
         return text; // エラー時は原文を返す
@@ -116,7 +139,7 @@ async function translateMarkdownWithPlaceholders(markdownText: string): Promise<
             placeholders[ph] = match;
             return ph;
         })
-        .replace(/\ \[([^\]]*)\]\(([^)]+)\)/g, match => {
+        .replace(/\[([^\]]*)\]\(([^)]+)\)/g, match => {
             const ph = `__LINK_${counter++}__`;
             placeholders[ph] = match;
             return ph;
@@ -264,11 +287,6 @@ function getWebviewContent(
                 .header img { width: 48px; height: 48px; margin-right: 15px; }
                 .header-info h1 { margin: 0 0 5px 0; font-size: 1.5em; }
                 .header-info p { margin: 0; opacity: 0.8; }
-                .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--vscode-panel-border); }
-                .tab { padding: 8px 16px; cursor: pointer; border: none; background: none; color: var(--vscode-editor-foreground); font-size: 14px; }
-                .tab.active { border-bottom: 2px solid var(--vscode-button-background); font-weight: bold; }
-                .tab-content { display: none; }
-                .tab-content.active { display: block; }
                 .description { margin-bottom: 20px; padding: 15px; background-color: var(--vscode-editor-inactiveSelectionBackground); border-radius: 5px; }
                 pre { background-color: var(--vscode-textCodeBlock-background); padding: 10px; border-radius: 5px; overflow-x: auto; }
                 code { font-family: 'SF Mono', Monaco, Menlo, Consolas, 'Ubuntu Mono', monospace; }
@@ -292,27 +310,11 @@ function getWebviewContent(
                 <p><strong>原文:</strong> ${extension.packageJSON.description || '説明なし'}</p>
                 <p><strong>翻訳:</strong> ${translatedDescription}</p>
             </div>
-            <div class="tabs">
-                <button class="tab active" data-tab="original">原文</button>
-                <button class="tab" data-tab="translated">翻訳</button>
-            </div>
-            <div id="original" class="tab-content active">
-                <div class="markdown-body">${originalHtml}</div>
-            </div>
-            <div id="translated" class="tab-content">
+            <div id="translated">
                 <div class="markdown-body">${translatedHtml}</div>
             </div>
             <script nonce="${nonce}">
                 const vscode = acquireVsCodeApi();
-                document.querySelectorAll('.tab').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const tabId = btn.getAttribute('data-tab');
-                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                        document.getElementById(tabId).classList.add('active');
-                        btn.classList.add('active');
-                    });
-                });
                 document.addEventListener('click', (e) => {
                     const target = e.target.closest('a');
                     if (!target) return;
