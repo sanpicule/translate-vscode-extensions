@@ -6,8 +6,11 @@ on:
       - main
 
 jobs:
-  tag-and-release:
+  tag-and--release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
 
     steps:
       - name: Checkout code
