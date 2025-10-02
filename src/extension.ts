@@ -2,13 +2,16 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { marked } from 'marked';
-const translate = require('google-translate-api-x');
+let translate = require('google-translate-api-x');
+
+// テスト用: translateを差し替えるための関数
+export function setTranslate(fn: typeof translate) {
+    translate = fn;
+}
 const path = require('path');
 
 // Google Translateを使用した翻訳関数
-async function translateWithGoogleTranslate(text: string): Promise<string> {
-    console.log('Google Translateで翻訳中...');
+export async function translateWithGoogleTranslate(text: string): Promise<string> {
     if (!text || text.trim() === '') {
         return text;
     }
@@ -45,8 +48,7 @@ async function translateWithGoogleTranslate(text: string): Promise<string> {
 }
 
 // Gemini APIを使用した翻訳関数
-async function translateWithGemini(text: string, apiKey: string): Promise<string> {
-    console.log('Geminiで翻訳中...');
+async function translateWithGeminiImpl(text: string, apiKey: string): Promise<string> {
     if (!text || text.trim() === '') {
         return text;
     }
@@ -71,9 +73,16 @@ ${text}
         throw error; // Geminiが失敗した場合はエラーを投げてフォールバックさせる
     }
 }
+let _translateWithGemini = translateWithGeminiImpl;
+export function setTranslateWithGemini(fn: typeof translateWithGeminiImpl) {
+    _translateWithGemini = fn;
+}
+export async function translateWithGemini(text: string, apiKey: string): Promise<string> {
+    return _translateWithGemini(text, apiKey);
+}
 
 // 拡張機能の詳細説明（短いテキスト）を翻訳する関数
-async function translateExtensionDescription(text: string): Promise<string> {
+export async function translateExtensionDescription(text: string): Promise<string> {
     if (!text || text.trim() === '') {
         return '';
     }
@@ -95,7 +104,11 @@ async function translateExtensionDescription(text: string): Promise<string> {
 }
 
 // マークダウンテキスト全体を翻訳するメイン関数
-async function translateMarkdownText(markdownText: string): Promise<string> {
+let _translateMarkdownWithPlaceholders = translateMarkdownWithPlaceholders;
+export function setTranslateMarkdownWithPlaceholders(fn: typeof translateMarkdownWithPlaceholders) {
+    _translateMarkdownWithPlaceholders = fn;
+}
+export async function translateMarkdownText(markdownText: string): Promise<string> {
     if (!markdownText || markdownText.trim() === '') {
         return '';
     }
@@ -104,19 +117,19 @@ async function translateMarkdownText(markdownText: string): Promise<string> {
 
     try {
         if (geminiApiKey && geminiApiKey.trim() !== '') {
-            return await translateWithGemini(markdownText, geminiApiKey);
+            return await _translateWithGemini(markdownText, geminiApiKey);
         } else {
-            return await translateMarkdownWithPlaceholders(markdownText);
+            return await _translateMarkdownWithPlaceholders(markdownText);
         }
     } catch (error) {
         console.error('マークダウン翻訳エラー:', error);
         // Geminiが失敗した場合は常にGoogle Translate方式へフォールバック
-        return await translateMarkdownWithPlaceholders(markdownText);
+        return await _translateMarkdownWithPlaceholders(markdownText);
     }
 }
 
 // プレースホルダー方式によるMarkdown翻訳（Google Translate用）
-async function translateMarkdownWithPlaceholders(markdownText: string): Promise<string> {
+export async function translateMarkdownWithPlaceholders(markdownText: string): Promise<string> {
     const placeholders: { [key: string]: string } = {};
     let counter = 0;
 
@@ -160,7 +173,7 @@ async function translateMarkdownWithPlaceholders(markdownText: string): Promise<
 
 
 // WebViewを作成・表示する関数
-async function createTranslationWebView(context: vscode.ExtensionContext, extension: vscode.Extension<any>, originalReadme: string, translatedReadme: string) {
+export async function createTranslationWebView(context: vscode.ExtensionContext, extension: vscode.Extension<any>, originalReadme: string, translatedReadme: string) {
     const translatedDescription = await translateExtensionDescription(extension.packageJSON.description || '');
     
     const panel = vscode.window.createWebviewPanel(
@@ -179,12 +192,13 @@ async function createTranslationWebView(context: vscode.ExtensionContext, extens
     );
 
     const renderMarkdownToHtml = async (markdown: string): Promise<string> => {
+        const { marked } = await import('marked');
         const renderer = new marked.Renderer();
         const basePath = extension.extensionPath;
 
         const normalizeHref = (href: string | null | undefined): string => {
             let s = (href || '').trim();
-            if ((s.startsWith('<') && s.endsWith('>')) || (s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'" ) && s.endsWith("'" ))) {
+            if ((s.startsWith('<') && s.endsWith('>')) || (s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
                 s = s.slice(1, -1);
             }
             return s.replace(/\r?\n/g, '');
@@ -330,7 +344,7 @@ function getWebviewContent(
     `;
 }
 
-async function getExtensionReadme(extension: vscode.Extension<any>): Promise<string> {
+export async function getExtensionReadme(extension: vscode.Extension<any>): Promise<string> {
     try {
         const readmePath = path.join(extension.extensionPath, 'README.md');
         const fileContent = await vscode.workspace.fs.readFile(vscode.Uri.file(readmePath));
