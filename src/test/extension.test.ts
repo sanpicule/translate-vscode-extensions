@@ -43,12 +43,9 @@ suite('translate-description extension', () => {
 			assert.strictEqual(result, 'こんにちは');
 		});
 	test('Geminiが失敗した場合はエラーを投げる', async () => {
-		sandbox.stub(extensionModule, 'translateWithGemini').rejects(new Error('fail'));
-		// @ts-ignore
-		extensionModule["GoogleGenerativeAI"] = function(apiKey: string) { return fakeGenAI(apiKey); };
-		// @ts-ignore
-		await assert.rejects(() => extensionModule["translateWithGemini"]('hello', 'dummy-key'));
-		});
+		extensionModule.setTranslateWithGemini(async () => { throw new Error('fail'); });
+		await assert.rejects(() => extensionModule["translateWithGemini"]('hello', 'dummy-key'), /fail/);
+	});
 	});
 
 	suite('translateExtensionDescription', () => {
