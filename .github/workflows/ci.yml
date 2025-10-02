@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20] # 必要なら複数バージョンでテスト
+        node-version: [18, 20] # Test with multiple versions if necessary
 
     steps:
       - name: Checkout code
