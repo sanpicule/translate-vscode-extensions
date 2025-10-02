@@ -8,6 +8,7 @@ const path = require('path');
 
 // Google Translateを使用した翻訳関数
 async function translateWithGoogleTranslate(text: string): Promise<string> {
+    console.log('Google Translateで翻訳中...');
     if (!text || text.trim() === '') {
         return text;
     }
@@ -19,13 +20,13 @@ async function translateWithGoogleTranslate(text: string): Promise<string> {
         let buf = '';
         for (const line of text.split(/\r?\n/)) {
             if ((buf + (buf ? '\n' : '') + line).length > MAX_CHUNK) {
-                if (buf) chunks.push(buf);
+                if (buf) {chunks.push(buf);}
                 buf = line;
             } else {
                 buf = buf ? `${buf}\n${line}` : line;
             }
         }
-        if (buf) chunks.push(buf);
+        if (buf) {chunks.push(buf);}
     } else {
         chunks.push(text);
     }
@@ -45,12 +46,13 @@ async function translateWithGoogleTranslate(text: string): Promise<string> {
 
 // Gemini APIを使用した翻訳関数
 async function translateWithGemini(text: string, apiKey: string): Promise<string> {
+    console.log('Geminiで翻訳中...');
     if (!text || text.trim() === '') {
         return text;
     }
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
         const prompt = `以下のMarkdownテキストを、自然で高品質な日本語に翻訳してください。
 ただし、コードブロック（\`\`\`）やインラインコード（\`）の中身、URL、ファイルパス、HTMLタグは絶対に翻訳・変更しないでください。
@@ -77,20 +79,18 @@ async function translateExtensionDescription(text: string): Promise<string> {
     }
     const config = vscode.workspace.getConfiguration('translateDescription');
     const geminiApiKey = config.get<string>('geminiApiKey');
-
+    if (!geminiApiKey || geminiApiKey.trim() === '') {
+        throw new Error('Gemini APIキーが設定されていません');
+    }
     try {
-        if (geminiApiKey && geminiApiKey.trim() !== '') {
-            const simplePrompt = `Translate the following English text into natural-sounding Japanese:\n\n${text}`;
-            const genAI = new GoogleGenerativeAI(geminiApiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-            const result = await model.generateContent(simplePrompt);
-            return (await result.response).text().trim();
-        } else {
-            return await translateWithGoogleTranslate(text);
-        }
+        const prompt = `次のテキストを、自然で高品質な日本語に意訳してください。文体は丁寧で、読みやすく、VS Code拡張機能の説明として最適なものにしてください。余計な注釈や説明は不要です。\n\n---\n${text}\n---`;
+        const genAI = new GoogleGenerativeAI(geminiApiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+        const result = await model.generateContent(prompt);
+        return (await result.response).text().trim();
     } catch (error) {
         console.error('拡張機能説明翻訳エラー:', error);
-        return translateWithGoogleTranslate(text);
+        throw error;
     }
 }
 
@@ -304,8 +304,7 @@ function getWebviewContent(
             </div>
             <div class="description">
                 <h3>説明</h3>
-                <p><strong>原文:</strong> ${extension.packageJSON.description || '説明なし'}</p>
-                <p><strong>翻訳:</strong> ${translatedDescription}</p>
+                <p>${translatedDescription}</p>
             </div>
             <div id="translated">
                 <div class="markdown-body">${translatedHtml}</div>
@@ -358,7 +357,7 @@ export function activate(context: vscode.ExtensionContext) {
             }));
 
             const selected = await vscode.window.showQuickPick(items, { placeHolder: '翻訳したい拡張機能を選択してください' });
-            if (!selected) return;
+            if (!selected) { return; }
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
