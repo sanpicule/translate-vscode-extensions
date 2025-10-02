@@ -4,7 +4,7 @@
   "displayName": "extension-translate-jp",
   "description": "A tool that automatically translates the description and README of VSCode extensions into Japanese for better understanding. It uses the Gemini API to provide high-quality Japanese translations.",
   "icon": "images/icon.png",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/sanpicule/translate-vscode-extensions.git"
